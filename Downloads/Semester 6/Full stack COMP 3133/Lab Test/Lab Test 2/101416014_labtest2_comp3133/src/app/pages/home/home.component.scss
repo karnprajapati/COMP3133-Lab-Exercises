@@ -1,0 +1,76 @@
+.page-heading {
+  margin-bottom: 24px;
+  
+  h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #005288;
+    margin-bottom: 8px;
+  }
+  
+  p {
+    font-size: 1rem;
+    color: #666;
+  }
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.filter-panel {
+  grid-column: 1 / 2;
+}
+
+.mission-list-container {
+  grid-column: 2 / 3;
+}
+
+.mission-details-container {
+  grid-column: 3 / 4;
+}
+
+// Mobile layout
+.mobile-layout {
+  grid-template-columns: 1fr;
+  
+  .filter-panel {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+  }
+  
+  .mission-list-container {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+  }
+  
+  .mission-details-container {
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+  }
+}
+
+// Tablet layout
+@media (max-width: 992px) and (min-width: 769px) {
+  .content-grid {
+    grid-template-columns: 1fr 1fr;
+    
+    .filter-panel {
+      grid-column: 1 / 3;
+      grid-row: 1 / 2;
+    }
+    
+    .mission-list-container {
+      grid-column: 1 / 2;
+      grid-row: 2 / 3;
+    }
+    
+    .mission-details-container {
+      grid-column: 2 / 3;
+      grid-row: 2 / 3;
+    }
+  }
+}

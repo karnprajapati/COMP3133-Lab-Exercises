@@ -1,0 +1,227 @@
+<div class="mission-details-container">
+  <button mat-stroked-button class="back-button" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon> Back to missions
+  </button>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading mission details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <h3>Error Loading Mission</h3>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      Return to Mission List
+    </button>
+  </div>
+
+  <!-- Mission Details Content -->
+  <div *ngIf="mission && !isLoading" class="mission-content">
+    <div class="mission-header" [ngClass]="{'success': mission.launch_success, 'failed': mission.launch_success === false}">
+      <div class="mission-header-content">
+        <div class="mission-patch">
+          <img *ngIf="mission.links.mission_patch" [src]="mission.links.mission_patch" alt="Mission patch">
+          <mat-icon *ngIf="!mission.links.mission_patch">rocket_launch</mat-icon>
+        </div>
+        
+        <div class="mission-title">
+          <h1>{{ mission.mission_name }}</h1>
+          <div class="mission-subtitle">
+            <span class="flight-number">Flight #{{ mission.flight_number }}</span>
+            <span class="launch-year">{{ mission.launch_year }}</span>
+          </div>
+          
+          <div class="mission-status">
+            <mat-icon *ngIf="mission.launch_success">check_circle</mat-icon>
+            <mat-icon *ngIf="mission.launch_success === false">cancel</mat-icon>
+            <span *ngIf="mission.launch_success !== undefined">
+              {{ mission.launch_success ? 'Launch Successful' : 'Launch Failed' }}
+            </span>
+            <span *ngIf="mission.launch_success === undefined">Status Unknown</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <mat-card class="mission-details-card">
+      <mat-card-content>
+        <mat-tab-group animationDuration="300ms">
+          <!-- Overview Tab -->
+          <mat-tab label="Overview">
+            <div class="tab-content">
+              <section class="details-section">
+                <h3>Mission Details</h3>
+                <p class="mission-description">{{ mission.details || 'No detailed description available for this mission.' }}</p>
+              </section>
+              
+              <section class="details-section">
+                <h3>Launch Information</h3>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="info-label">Launch Date:</span>
+                    <span class="info-value">{{ formatDate(mission.launch_date_utc) }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">Launch Site:</span>
+                    <span class="info-value">{{ mission.launch_site.site_name_long }}</span>
+                  </div>
+                </div>
+              </section>
+              
+              <section class="details-section">
+                <h3>Rocket</h3>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="info-label">Name:</span>
+                    <span class="info-value">{{ mission.rocket.rocket_name }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">Type:</span>
+                    <span class="info-value">{{ mission.rocket.rocket_type }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">ID:</span>
+                    <span class="info-value">{{ mission.rocket.rocket_id }}</span>
+                  </div>
+                </div>
+              </section>
+              
+              <section *ngIf="mission.launch_failure_details" class="details-section failure-details">
+                <h3>Launch Failure Details</h3>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="info-label">Time (seconds):</span>
+                    <span class="info-value">{{ mission.launch_failure_details.time }}</span>
+                  </div>
+                  
+                  <div class="info-item" *ngIf="mission.launch_failure_details.altitude">
+                    <span class="info-label">Altitude (km):</span>
+                    <span class="info-value">{{ mission.launch_failure_details.altitude }}</span>
+                  </div>
+                  
+                  <div class="info-item full-width">
+                    <span class="info-label">Reason:</span>
+                    <span class="info-value">{{ mission.launch_failure_details.reason }}</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </mat-tab>
+          
+          <!-- Media Tab -->
+          <mat-tab label="Media">
+            <div class="tab-content">
+              <section class="details-section">
+                <h3>Images</h3>
+                <div *ngIf="mission.links.flickr_images && mission.links.flickr_images.length > 0" class="images-grid">
+                  <div *ngFor="let image of mission.links.flickr_images" class="image-item">
+                    <img [src]="image" alt="Mission image" />
+                  </div>
+                </div>
+                <p *ngIf="!mission.links.flickr_images || mission.links.flickr_images.length === 0" class="no-content">
+                  No images available for this mission.
+                </p>
+              </section>
+              
+              <section class="details-section">
+                <h3>Videos & Articles</h3>
+                <div class="media-links">
+                  <a *ngIf="mission.links.video_link" mat-raised-button color="primary" [href]="mission.links.video_link" target="_blank">
+                    <mat-icon>play_circle</mat-icon>
+                    Watch Launch Video
+                  </a>
+                  
+                  <a *ngIf="mission.links.article_link" mat-raised-button [href]="mission.links.article_link" target="_blank">
+                    <mat-icon>article</mat-icon>
+                    Read Article
+                  </a>
+                  
+                  <a *ngIf="mission.links.wikipedia" mat-raised-button [href]="mission.links.wikipedia" target="_blank">
+                    <mat-icon>language</mat-icon>
+                    Wikipedia
+                  </a>
+                  
+                  <a *ngIf="mission.links.presskit" mat-raised-button [href]="mission.links.presskit" target="_blank">
+                    <mat-icon>description</mat-icon>
+                    Press Kit
+                  </a>
+                </div>
+                <p *ngIf="!mission.links.video_link && !mission.links.article_link && !mission.links.wikipedia && !mission.links.presskit" class="no-content">
+                  No media links available for this mission.
+                </p>
+              </section>
+            </div>
+          </mat-tab>
+          
+          <!-- Technical Tab -->
+          <mat-tab label="Technical">
+            <div class="tab-content">
+              <section class="details-section">
+                <h3>Technical Details</h3>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="info-label">Flight Number:</span>
+                    <span class="info-value">{{ mission.flight_number }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">Mission IDs:</span>
+                    <span class="info-value">
+                      <span *ngIf="mission.mission_id.length > 0">{{ mission.mission_id.join(', ') }}</span>
+                      <span *ngIf="mission.mission_id.length === 0">None</span>
+                    </span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">Launch Window:</span>
+                    <span class="info-value">{{ mission.launch_window ? mission.launch_window + ' seconds' : 'Not specified' }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">Launch Date (Unix):</span>
+                    <span class="info-value">{{ mission.launch_date_unix }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">Tentative:</span>
+                    <span class="info-value">{{ mission.is_tentative ? 'Yes' : 'No' }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">Tentative Max Precision:</span>
+                    <span class="info-value">{{ mission.tentative_max_precision }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">TBD:</span>
+                    <span class="info-value">{{ mission.tbd ? 'Yes' : 'No' }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">Launch Site ID:</span>
+                    <span class="info-value">{{ mission.launch_site.site_id }}</span>
+                  </div>
+                  
+                  <div class="info-item">
+                    <span class="info-label">Ships:</span>
+                    <span class="info-value">
+                      <span *ngIf="mission.ships.length > 0">{{ mission.ships.join(', ') }}</span>
+                      <span *ngIf="mission.ships.length === 0">None</span>
+                    </span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

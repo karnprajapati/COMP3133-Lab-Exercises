@@ -1,0 +1,99 @@
+<div class="mission-list-container">
+  <h2 class="section-title">SpaceX Missions</h2>
+  
+  <app-missionfilter
+    [years]="years"
+    [filter]="filter"
+    (filterChange)="onFilterChange($event)"
+    [totalMissions]="missions.length"
+    [filteredCount]="filteredMissions.length">
+  </app-missionfilter>
+
+  <div class="mission-list-content">
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading missions...</p>
+    </div>
+
+    <!-- Error state -->
+    <div *ngIf="error && !isLoading" class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="loadMissions()">
+        <mat-icon>refresh</mat-icon> Retry
+      </button>
+    </div>
+
+    <!-- No results state -->
+    <div *ngIf="filteredMissions.length === 0 && !isLoading && !error" class="no-results-container">
+      <mat-icon>search_off</mat-icon>
+      <p>No missions found. Try adjusting your filters.</p>
+      <button mat-button color="primary" (click)="onFilterChange({})">Clear Filters</button>
+    </div>
+
+    <!-- Mission list -->
+    <div *ngIf="filteredMissions.length > 0 && !isLoading" class="missions-grid">
+      <mat-card *ngFor="let mission of getPaginatedMissions()" class="mission-card" (click)="viewMissionDetails(mission)">
+        <mat-card-header>
+          <div mat-card-avatar class="mission-avatar">
+            <img *ngIf="mission.links.mission_patch_small" [src]="mission.links.mission_patch_small" alt="Mission patch">
+            <mat-icon *ngIf="!mission.links.mission_patch_small">rocket</mat-icon>
+          </div>
+          <mat-card-title>{{ mission.mission_name }}</mat-card-title>
+          <mat-card-subtitle>
+            <div class="flight-number">#{{ mission.flight_number }}</div>
+            <div class="launch-year">{{ mission.launch_year }}</div>
+          </mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <p class="mission-details">{{ mission.details || 'No details available' | slice:0:150 }}{{ mission.details && mission.details.length > 150 ? '...' : '' }}</p>
+          
+          <div class="mission-info-row">
+            <span class="label">Rocket:</span>
+            <span>{{ mission.rocket.rocket_name }} ({{ mission.rocket.rocket_type }})</span>
+          </div>
+          
+          <div class="mission-status" [ngClass]="{'success': mission.launch_success, 'failed': mission.launch_success === false}">
+            <mat-icon *ngIf="mission.launch_success">check_circle</mat-icon>
+            <mat-icon *ngIf="mission.launch_success === false">cancel</mat-icon>
+            <span *ngIf="mission.launch_success !== undefined">
+              {{ mission.launch_success ? 'Successful launch' : 'Failed launch' }}
+            </span>
+            <span *ngIf="mission.launch_success === undefined">
+              Launch status unknown
+            </span>
+          </div>
+        </mat-card-content>
+        
+        <mat-card-actions>
+          <button mat-button color="primary">
+            <mat-icon>info</mat-icon> View Details
+          </button>
+          <div class="external-links">
+            <a *ngIf="mission.links.article_link" [href]="mission.links.article_link" target="_blank" mat-icon-button matTooltip="Read Article">
+              <mat-icon>article</mat-icon>
+            </a>
+            <a *ngIf="mission.links.wikipedia" [href]="mission.links.wikipedia" target="_blank" mat-icon-button matTooltip="View on Wikipedia">
+              <mat-icon>language</mat-icon>
+            </a>
+            <a *ngIf="mission.links.video_link" [href]="mission.links.video_link" target="_blank" mat-icon-button matTooltip="Watch Video">
+              <mat-icon>videocam</mat-icon>
+            </a>
+          </div>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator *ngIf="filteredMissions.length > 0"
+      [length]="filteredMissions.length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="pageIndex"
+      (page)="onPageChange($event)"
+      aria-label="Select page">
+    </mat-paginator>
+  </div>
+</div>

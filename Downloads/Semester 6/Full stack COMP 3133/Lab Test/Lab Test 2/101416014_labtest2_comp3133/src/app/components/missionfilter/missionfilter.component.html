@@ -1,0 +1,51 @@
+<div class="filter-container">
+  <form [formGroup]="filterForm" class="filter-form">
+    <div class="filter-row">
+      <div class="search-field">
+        <mat-form-field appearance="outline">
+          <mat-label>Search missions</mat-label>
+          <input matInput formControlName="searchTerm" placeholder="Mission name or details">
+          <mat-icon matPrefix>search</mat-icon>
+          <button 
+            *ngIf="filterForm.get('searchTerm')?.value" 
+            matSuffix mat-icon-button 
+            (click)="filterForm.patchValue({searchTerm: ''})"
+            aria-label="Clear"
+            type="button">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      
+      <div class="year-filter">
+        <mat-form-field appearance="outline">
+          <mat-label>Filter by year</mat-label>
+          <mat-select formControlName="year">
+            <mat-option value="">All years</mat-option>
+            <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      
+      <button 
+        mat-stroked-button 
+        color="primary" 
+        class="clear-button" 
+        [disabled]="!hasActiveFilters" 
+        (click)="clearFilters()"
+        type="button">
+        <mat-icon>filter_alt_off</mat-icon>
+        Clear filters
+      </button>
+    </div>
+  </form>
+  
+  <div class="filter-stats">
+    <span *ngIf="filteredCount !== totalMissions">
+      Showing {{ filteredCount }} of {{ totalMissions }} missions
+    </span>
+    <span *ngIf="filteredCount === totalMissions">
+      {{ totalMissions }} missions total
+    </span>
+  </div>
+</div>

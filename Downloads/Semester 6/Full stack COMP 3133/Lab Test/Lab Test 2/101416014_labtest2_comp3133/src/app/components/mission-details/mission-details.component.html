@@ -1,0 +1,143 @@
+<div class="details-container">
+  <!-- No mission selected state -->
+  <div class="empty-details" *ngIf="!mission">
+    <mat-icon class="empty-icon">rocket</mat-icon>
+    <h3 class="empty-title">No Mission Selected</h3>
+    <p class="empty-message">Select a mission from the list to view details</p>
+  </div>
+  
+  <!-- Mission details -->
+  <div class="mission-details" *ngIf="mission">
+    <!-- Mobile header with close button -->
+    <div class="mobile-header" *ngIf="isMobile">
+      <button class="close-btn" (click)="onCloseDetails()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h3 class="mobile-title">Mission Details</h3>
+    </div>
+    
+    <!-- Mission header -->
+    <div class="details-header">
+      <div class="mission-patch" *ngIf="mission.links?.mission_patch_small">
+        <img [src]="mission.links.mission_patch_small" alt="Mission patch" class="patch-image">
+      </div>
+      <div class="header-info">
+        <h2 class="mission-title">{{ mission.mission_name }}</h2>
+        <div class="mission-subtitle">Flight #{{ mission.flight_number }}</div>
+        
+        <div 
+          class="status-badge" 
+          [class.success]="mission.launch_success === true"
+          [class.failure]="mission.launch_success === false"
+          [class.upcoming]="mission.upcoming === true">
+          <mat-icon *ngIf="mission.launch_success === true">check_circle</mat-icon>
+          <mat-icon *ngIf="mission.launch_success === false">cancel</mat-icon>
+          <mat-icon *ngIf="mission.upcoming === true">schedule</mat-icon>
+          <span *ngIf="mission.launch_success === true">Success</span>
+          <span *ngIf="mission.launch_success === false">Failed</span>
+          <span *ngIf="mission.upcoming === true">Upcoming</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mission info -->
+    <mat-divider></mat-divider>
+    
+    <div class="details-section">
+      <h3 class="section-title">Launch Details</h3>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Launch Date</div>
+          <div class="info-value">{{ formatDate(mission.launch_date_utc) }}</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Launch Site</div>
+          <div class="info-value">{{ mission.launch_site.site_name_long }}</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Rocket</div>
+          <div class="info-value">{{ mission.rocket.rocket_name }} ({{ mission.rocket.rocket_type }})</div>
+        </div>
+        
+        <div class="info-item" *ngIf="mission.launch_year">
+          <div class="info-label">Launch Year</div>
+          <div class="info-value">{{ mission.launch_year }}</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mission description -->
+    <div class="details-section" *ngIf="mission.details">
+      <h3 class="section-title">Mission Description</h3>
+      <p class="mission-description">{{ mission.details }}</p>
+    </div>
+    
+    <!-- Links section -->
+    <div class="details-section" *ngIf="mission.links">
+      <h3 class="section-title">Links</h3>
+      
+      <div class="links-grid">
+        <a 
+          *ngIf="mission.links.article_link"
+          [href]="mission.links.article_link" 
+          target="_blank" 
+          class="link-item">
+          <mat-icon>article</mat-icon>
+          Article
+        </a>
+        
+        <a 
+          *ngIf="mission.links.wikipedia"
+          [href]="mission.links.wikipedia" 
+          target="_blank" 
+          class="link-item">
+          <mat-icon>public</mat-icon>
+          Wikipedia
+        </a>
+        
+        <a 
+          *ngIf="mission.links.video_link"
+          [href]="mission.links.video_link" 
+          target="_blank" 
+          class="link-item">
+          <mat-icon>videocam</mat-icon>
+          Video
+        </a>
+        
+        <a 
+          *ngIf="mission.links.presskit"
+          [href]="mission.links.presskit" 
+          target="_blank" 
+          class="link-item">
+          <mat-icon>description</mat-icon>
+          Press Kit
+        </a>
+      </div>
+    </div>
+    
+    <!-- Failure details if applicable -->
+    <div class="details-section failure-section" *ngIf="mission.launch_failure_details">
+      <h3 class="section-title">Failure Details</h3>
+      
+      <div class="failure-details">
+        <div class="info-item">
+          <div class="info-label">Time (seconds)</div>
+          <div class="info-value">{{ mission.launch_failure_details.time }}</div>
+        </div>
+        
+        <div class="info-item" *ngIf="mission.launch_failure_details.altitude">
+          <div class="info-label">Altitude (km)</div>
+          <div class="info-value">{{ mission.launch_failure_details.altitude }}</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Reason</div>
+          <div class="info-value">{{ mission.launch_failure_details.reason }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

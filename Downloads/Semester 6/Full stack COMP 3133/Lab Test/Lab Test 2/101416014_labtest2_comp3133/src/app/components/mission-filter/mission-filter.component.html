@@ -1,0 +1,57 @@
+<div class="filter-container">
+  <div class="filter-header">
+    <h3 class="filter-title">Filter Missions</h3>
+    <div class="filter-stats" *ngIf="!isLoading">
+      <span class="filter-count">{{ filteredCount }} of {{ totalMissions }}</span> missions
+    </div>
+  </div>
+  
+  <div class="filter-form">
+    <div class="filter-row">
+      <div class="form-group">
+        <label for="year-select" class="form-label">Launch Year</label>
+        <select 
+          id="year-select" 
+          class="form-control"
+          [disabled]="isLoading || !years.length"
+          [value]="selectedYear"
+          (change)="onYearChange($event)">
+          <option value="">All Years</option>
+          <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="search-input" class="form-label">Search</label>
+        <input 
+          type="text" 
+          id="search-input" 
+          class="form-control"
+          placeholder="Search by name, rocket, etc."
+          [disabled]="isLoading"
+          [value]="searchTerm"
+          (input)="onSearchChange($event)">
+      </div>
+    </div>
+    
+    <div class="filter-actions">
+      <button 
+        class="clear-btn" 
+        [disabled]="isLoading || !hasActiveFilters" 
+        (click)="clearFilters()">
+        Clear Filters
+      </button>
+    </div>
+  </div>
+  
+  <div class="active-filters" *ngIf="hasActiveFilters">
+    <div class="filter-chips">
+      <div class="filter-chip" *ngIf="selectedYear">
+        Year: {{ selectedYear }}
+      </div>
+      <div class="filter-chip" *ngIf="searchTerm">
+        Search: {{ searchTerm }}
+      </div>
+    </div>
+  </div>
+</div>

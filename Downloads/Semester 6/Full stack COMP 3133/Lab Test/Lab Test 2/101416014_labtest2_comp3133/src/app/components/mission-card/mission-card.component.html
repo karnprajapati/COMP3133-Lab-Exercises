@@ -1,0 +1,48 @@
+<div class="mission-card" [class.selected]="isSelected">
+  <div class="mission-header">
+    <div class="mission-name">{{ mission.mission_name }}</div>
+    <div class="flight-number">#{{ mission.flight_number }}</div>
+  </div>
+  
+  <div class="mission-info">
+    <div class="info-row">
+      <mat-icon class="info-icon">event</mat-icon>
+      <span class="info-label">Launch Date:</span>
+      <span class="info-value">{{ formatDate(mission.launch_date_utc) }}</span>
+    </div>
+    
+    <div class="info-row">
+      <mat-icon class="info-icon">rocket</mat-icon>
+      <span class="info-label">Rocket:</span>
+      <span class="info-value">{{ mission.rocket.rocket_name }}</span>
+    </div>
+    
+    <div class="info-row">
+      <mat-icon class="info-icon">location_on</mat-icon>
+      <span class="info-label">Site:</span>
+      <span class="info-value">{{ mission.launch_site.site_name }}</span>
+    </div>
+  </div>
+  
+  <div class="mission-status">
+    <div 
+      class="status-badge" 
+      [class.success]="mission.launch_success === true"
+      [class.failure]="mission.launch_success === false"
+      [class.upcoming]="mission.upcoming === true">
+      <mat-icon *ngIf="mission.launch_success === true">check_circle</mat-icon>
+      <mat-icon *ngIf="mission.launch_success === false">cancel</mat-icon>
+      <mat-icon *ngIf="mission.upcoming === true">schedule</mat-icon>
+      <span *ngIf="mission.launch_success === true">Success</span>
+      <span *ngIf="mission.launch_success === false">Failed</span>
+      <span *ngIf="mission.upcoming === true">Upcoming</span>
+    </div>
+  </div>
+  
+  <div class="mission-footer">
+    <button class="details-btn">
+      <mat-icon class="details-icon">visibility</mat-icon>
+      <span>View Details</span>
+    </button>
+  </div>
+</div>

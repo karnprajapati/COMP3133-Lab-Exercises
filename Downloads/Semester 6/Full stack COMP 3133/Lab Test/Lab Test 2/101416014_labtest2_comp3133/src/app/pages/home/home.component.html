@@ -1,0 +1,43 @@
+<div class="container">
+  <div class="page-heading">
+    <h2>SpaceX Launches</h2>
+    <p>Explore historical SpaceX rocket launches and missions data</p>
+  </div>
+  
+  <div class="content-grid" [ngClass]="{'mobile-layout': isMobile}">
+    <!-- Filter panel -->
+    <div class="filter-panel">
+      <app-mission-filter
+        [years]="launchYears"
+        [filter]="filter"
+        [totalMissions]="missions.length"
+        [filteredCount]="filteredMissions.length"
+        [isLoading]="isLoading"
+        (filterChange)="onFilterChange($event)">
+      </app-mission-filter>
+    </div>
+    
+    <!-- Mission list -->
+    <div class="mission-list-container">
+      <app-mission-list
+        [missions]="getCurrentPageMissions()"
+        [isLoading]="isLoading"
+        [selectedMission]="selectedMission"
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [totalMissions]="filteredMissions.length"
+        (selectMission)="onSelectMission($event)"
+        (pageChange)="onPageChange($event)">
+      </app-mission-list>
+    </div>
+    
+    <!-- Mission details (shown in non-mobile layout or when selected on mobile) -->
+    <div class="mission-details-container" *ngIf="!isMobile || (isMobile && selectedMission)">
+      <app-mission-details
+        [mission]="selectedMission"
+        [isMobile]="isMobile"
+        (close)="selectedMission = null">
+      </app-mission-details>
+    </div>
+  </div>
+</div>
